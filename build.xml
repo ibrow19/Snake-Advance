@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+    <project  name="SnakeAdvance" xmlns:doxygen="antlib:org.doxygen.tools" default="main">
+    <property name="src.dir"                value="./src"/>
+    <property name="build.dir"              value="./build"/>
+    <property name="classes.dir"            value="${build.dir}/classes"/>
+    <property name="jar.dir"                value="${build.dir}/jar"/>
+    <property name="lib.dir"                value="./lib"/>
+    <property name="docs.dir"               value="./docs"/>
+    <property name="main-class"             value="Game"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+        
+    <!-- Delete build directories -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${docs.dir}"/>
+    </target>
+    
+    <!-- Compile code -->
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" 
+               destdir="${classes.dir}" 
+               classpathref="classpath"
+               debug="true"
+               debuglevel="vars,lines,source"
+               includeantruntime="false"
+        />
+    </target>
+
+    <!-- Create jar -->
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar basedir="${classes.dir}" 
+             destfile="${jar.dir}/${ant.project.name}.jar"
+        >
+        <manifest>
+            <attribute name="Main-Class" value="${main-class}"/>
+        </manifest>
+        </jar>
+    </target>
+
+    <!-- Run Program -->
+    <target name="run" depends="jar">
+        <java classname="${main-class}" fork="true"> 
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${jar.dir}/${ant.project.name}.jar"/>
+            </classpath>
+            <assertions>
+                <enable/>
+            </assertions>
+        </java>
+    </target>
+
+    <target name="main" depends="clean, run">
+    </target>
+
+    <target name ="doxygen">
+        <mkdir dir="${docs.dir}"/>
+        <doxygen:doxygen>
+            <property name="PROJECT_NAME" value="Snake Advance"/>
+            <property name="INPUT" value="${src.dir}"/>
+            <property name="OUTPUT_DIRECTORY" value="${docs.dir}"/>
+            <property name="RECURSIVE" value="YES"/>
+            <property name="OPTIMIZE_OUTPUT_JAVA" value="YES"/>
+            <property name="EXTRACT_PRIVATE" value="YES"/>
+            <property name="EXTRACT_STATIC" value="YES"/>
+            <property name="HAVE_DOT" value="YES"/>
+            <property name="CLASS_DIAGRAMS" value="YES"/>
+            <property name="CLASS_GRAPH" value="YES"/>
+        </doxygen:doxygen>
+    </target>
+
+</project>
